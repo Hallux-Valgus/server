@@ -1,8 +1,24 @@
-from fastapi import FastAPI
+from fastapi import FastAPI, UploadFile, HTTPException, status
+from starlette.middleware.cors import CORSMiddleware
+from pydantic import BaseModel
 
-app = FastAPI()
+app = FastAPI(root_path="/api/v1", docs_url="/api/docs")
 
-@app.get("/hello")
-async def hello_page():
-    return {"msg": "Hello world!"}
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["*"],
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
 
+class LoginData(BaseModel):
+    username:str
+    password:str
+
+@app.post("/login", tags=["auth"])
+async def test_login_response(data: LoginData):
+    if data.username == "test" and data.password == "1234":
+        return {"message": "Login Success"}
+    else:
+        raise HTTPException(status_code=400, detail="Invalid Credentials")
