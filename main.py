@@ -2,6 +2,8 @@ from fastapi import FastAPI, UploadFile, HTTPException, status
 from starlette.middleware.cors import CORSMiddleware
 from pydantic import BaseModel
 
+from model.User import User
+
 app = FastAPI(root_path="/api/v1", docs_url="/api/docs")
 
 app.add_middleware(
@@ -22,3 +24,7 @@ async def test_login_response(data: LoginData):
         return {"message": "Login Success"}
     else:
         raise HTTPException(status_code=400, detail="Invalid Credentials")
+    
+@app.post("/create/code", tags=["info"])
+async def create_code(request: User):
+    return User
