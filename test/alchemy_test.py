@@ -16,6 +16,14 @@ class User(Base):
     
 SessionLocal = sessionmaker(autoflush=False, bind=engine)
 
+class SessionManager:
+    def __enter__(self):
+        self.session = SessionLocal()
+        return self.session
+
+    def __exit__(self, exc_type, exc_val, exc_tb):
+        self.session.close()
+
 def create_user(code: str, age:int, gender: str):
     db: Session = SessionLocal()
     new_user = User(code=code, age=age, gender=gender)
@@ -24,6 +32,11 @@ def create_user(code: str, age:int, gender: str):
     db.refresh(new_user)  # 새로 추가한 객체를 업데이트
     db.close()
     return new_user
+
+def read_all():
+    with SessionManager() as db:
+        users = db.query(User).all()
+        return users
 
 def read_user(code:str):
     db: Session = SessionLocal()
@@ -55,3 +68,4 @@ def delete_user(code:str):
 print(read_user("test_code"))
 print(update_user("test_code", 10))
 #print(delete_user("test_code"))
+print(read_all())

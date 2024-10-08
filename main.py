@@ -5,11 +5,10 @@ from sqlalchemy.orm import Session
 
 import uuid
 
-from model.User import User as user_model
-from model.models import Base, User
 from database import engine, get_db
+from Service.UserService import UserService
 
-Base.metadata.create_all(bind=engine)
+user_service = UserService()
 
 app = FastAPI(root_path="/api/v1", docs_url="/api/docs")
 
@@ -41,15 +40,10 @@ async def create_code():
 
 
 @app.post("/create/user", tags=["user_info"])
-async def create_user_info(request: user_model, db: Session = Depends(get_db)):
-    # db_user = db.query(User).filter(User.code == user.code).first()
+async def create_user_info(request, db: Session = Depends(get_db)):
+    pass
 
-    # if db_user:
-    #     raise HTTPException(status_code=400, detail="code was already registered")
 
-    new_user = User(code=user_model.code, gender=user_model.gender, age=user_model.age)
-    db.add(new_user)
-    db.commit()
-    db.refresh(new_user)
-
-    return new_user
+@app.get("/test", tags=["tmp_test"])
+async def test_page():
+    return user_service.read_all()
