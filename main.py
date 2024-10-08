@@ -5,7 +5,7 @@ from sqlalchemy.orm import Session
 
 import uuid
 
-from model.User import User as user
+from model.User import User as user_model
 from model.models import Base, User
 from database import engine, get_db
 
@@ -21,9 +21,11 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
+
 class LoginData(BaseModel):
-    username:str
-    password:str
+    username: str
+    password: str
+
 
 @app.post("/login", tags=["auth"])
 async def test_login_response(data: LoginData):
@@ -31,21 +33,23 @@ async def test_login_response(data: LoginData):
         return {"message": "Login Success"}
     else:
         raise HTTPException(status_code=400, detail="Invalid Credentials")
-    
+
+
 @app.get("/get/code", tags=["user_info"])
 async def create_code():
     return uuid.uuid4()
 
+
 @app.post("/create/user", tags=["user_info"])
-async def create_user_info(request: user, db:Session = Depends(get_db)):
+async def create_user_info(request: user_model, db: Session = Depends(get_db)):
     # db_user = db.query(User).filter(User.code == user.code).first()
-    
+
     # if db_user:
     #     raise HTTPException(status_code=400, detail="code was already registered")
 
-    new_user = User(code = user.code, gender = user.gender, age = user.age)
+    new_user = User(code=user_model.code, gender=user_model.gender, age=user_model.age)
     db.add(new_user)
     db.commit()
     db.refresh(new_user)
-    
+
     return new_user
