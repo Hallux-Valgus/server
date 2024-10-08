@@ -5,8 +5,8 @@ from sqlalchemy.orm import Session
 
 import uuid
 
-from database import engine, get_db
 from Service.User.UserService import UserService
+from model.Requests.User import UserRequest
 
 user_service = UserService()
 
@@ -40,8 +40,8 @@ async def create_code():
 
 
 @app.post("/create/user", tags=["user_info"])
-async def create_user_info(request, db: Session = Depends(get_db)):
-    pass
+async def create_user_info(request:UserRequest):
+    return user_service.create_user(request)
 
 
 @app.get("/test", tags=["tmp_test"])
