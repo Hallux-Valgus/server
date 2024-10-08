@@ -6,7 +6,7 @@ from sqlalchemy.orm import Session
 import uuid
 
 from database import engine, get_db
-from Service.UserService import UserService
+from Service.User.UserService import UserService
 
 user_service = UserService()
 
