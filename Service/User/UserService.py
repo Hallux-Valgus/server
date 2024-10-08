@@ -19,3 +19,9 @@ class UserService:
         with SessionManager() as db:
             users = db.query(User).all()
             return users
+        
+    def read_by_code(self, code:str):
+        with SessionManager() as db:
+            user = db.query(User).filter(User.code == code).first()
+            db.close()
+            return user

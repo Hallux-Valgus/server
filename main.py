@@ -38,6 +38,9 @@ async def test_login_response(data: LoginData):
 async def create_code():
     return uuid.uuid4()
 
+@app.get("/get/user", tags=["user_info"])
+async def get_user_by_code(code:str):
+    return user_service.read_by_code(code)
 
 @app.post("/create/user", tags=["user_info"])
 async def create_user_info(request:UserRequest):
@@ -45,5 +48,5 @@ async def create_user_info(request:UserRequest):
 
 
 @app.get("/test", tags=["tmp_test"])
-async def test_page():
-    return user_service.read_all()
+async def test_page(code:str):
+    return user_service.read_by_code(code)
