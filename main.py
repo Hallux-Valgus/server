@@ -62,7 +62,14 @@ async def create_user_info(request: UserRequest):
 
 @app.post("/upload", tags=["image"])
 async def upload_image(image: UploadFile = File(...), code: str = Form(...)):
-    result = image_service.create_image(code, image.filename)
+    new_image_name = f"{code}.{image.filename.split(".")[-1]}"
+    image_location = os.path.join(os.path.dirname(__file__), "static", "Img", new_image_name)
+    
+    with open(image_location, "wb") as f:
+        f.write(await image.read())
+        
+    result = image_service.create_image(code, new_image_name)
+    
     logging.info(result)
     return result
 
