@@ -21,7 +21,7 @@ logging.basicConfig(
 
 app = FastAPI(root_path="/api/v1", docs_url="/api/docs")
 
-app.mount("/api/v1/static", StaticFiles(directory="static"), name="static")
+app.mount("/static", StaticFiles(directory="static"), name="static")
 
 app.add_middleware(
     CORSMiddleware,
