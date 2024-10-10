@@ -1,0 +1,6 @@
+CREATE TABLE IMAGE(
+    id INT PRIMARY KEY AUTO_INCREMENT,
+    user_code VARCHAR(255),
+    image_path VARCHAR(255),
+    FOREIGN KEY(user_code) REFERENCES USER(code)
+);

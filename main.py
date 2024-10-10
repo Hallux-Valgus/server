@@ -1,19 +1,27 @@
-from fastapi import FastAPI, UploadFile,File,Form, HTTPException, status, Depends
+from fastapi import FastAPI, UploadFile, File, Form, HTTPException, status, Depends
+from fastapi.staticfiles import StaticFiles
 from starlette.middleware.cors import CORSMiddleware
 from pydantic import BaseModel
 from sqlalchemy.orm import Session
 
 import logging
 import uuid
+import os
 
 from Service.User.UserService import UserService
+from Service.Image.ImageService import ImageService
 from model.Requests.User import UserRequest
 
 user_service = UserService()
+image_service = ImageService(os.path.join(os.path.dirname(__file__), "static"))
 
-logging.basicConfig(level=logging.INFO, format="%(asctime)s \n%(levelname)s: \t %(message)s")
+logging.basicConfig(
+    level=logging.INFO, format="%(asctime)s \n%(levelname)s: \t %(message)s"
+)
 
 app = FastAPI(root_path="/api/v1", docs_url="/api/docs")
+
+app.mount("/api/v1/static", StaticFiles(directory="static"), name="static")
 
 app.add_middleware(
     CORSMiddleware,
@@ -53,9 +61,10 @@ async def create_user_info(request: UserRequest):
 
 
 @app.post("/upload", tags=["image"])
-async def upload_image(image:UploadFile = File(...), code:str=Form(...)):
-    logging.info(f"{image.filename} - {code}")
-    return {"image": image.filename, "code": code}
+async def upload_image(image: UploadFile = File(...), code: str = Form(...)):
+    result = image_service.create_image(code, image.filename)
+    logging.info(result)
+    return result
 
 
 @app.get("/test", tags=["tmp_test"])
