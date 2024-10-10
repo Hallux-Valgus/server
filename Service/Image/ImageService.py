@@ -9,7 +9,7 @@ class ImageService:
     
     def create_image(self, code:str, filename:str):
         with SessionManager() as db:
-            image_data = Image(user_code = code, image_path = f"/api/v1/static/{filename}")
+            image_data = Image(user_code = code, image_path = f"/api/v1/static/Img/{filename}")
             db.add(image_data)
             db.commit()
             db.refresh(image_data)
