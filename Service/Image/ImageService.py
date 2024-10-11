@@ -1,4 +1,3 @@
-import os
 from ..SessionManager import SessionManager
 from model.Image import Image
 
