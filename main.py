@@ -71,6 +71,7 @@ async def upload_image(image: UploadFile = File(...), code: str = Form(...)):
 
 @app.post("/send/mail", tags=["mail"])
 async def send_mail(mail_request:MailRequest):
+    #logging.info(mail_request)
     body_html = mail_service.create_body(code=mail_request.code)
     msg = mail_service.send_mail(to_email=mail_request.email, code=mail_request.code, body_html=body_html)
     return {"msg": msg}

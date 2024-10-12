@@ -44,7 +44,7 @@ class MailService:
         
         msg.attach(MIMEText(body_html, 'html'))
         
-        image_path = os.path.join()
+        image_path = os.path.join(self.root_path, "static", "Img", "/Users/janghyolim/Desktop/code/HFoot/static/Img/f3cf6e7e-dbf8-4d56-86f7-59bcdc8b7532.jpg")
         
         with open(image_path, "rb") as f:
             mime_image = MIMEImage(f.read())
