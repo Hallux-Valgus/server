@@ -10,10 +10,14 @@ import os
 
 from Service.User.UserService import UserService
 from Service.Image.ImageService import ImageService
+from Service.Email.MailService import MailService
 from model.Requests.User import UserRequest
 
+root_path = os.path.dirname(__file__)
+
 user_service = UserService()
-image_service = ImageService(os.path.join(os.path.dirname(__file__), "static"))
+image_service = ImageService(os.path.join(root_path, "static"))
+mail_service = MailService(root_path)
 
 logging.basicConfig(
     level=logging.INFO, format="%(asctime)s \n%(levelname)s: \t %(message)s"
@@ -30,19 +34,6 @@ app.add_middleware(
     allow_methods=["*"],
     allow_headers=["*"],
 )
-
-
-class LoginData(BaseModel):
-    username: str
-    password: str
-
-
-@app.post("/login", tags=["admin"])
-async def test_login_response(data: LoginData):
-    if data.username == "test" and data.password == "1234":
-        return {"message": "Login Success"}
-    else:
-        raise HTTPException(status_code=400, detail="Invalid Credentials")
 
 
 @app.get("/get/code", tags=["user_info"])
@@ -63,15 +54,24 @@ async def create_user_info(request: UserRequest):
 @app.post("/upload", tags=["image"])
 async def upload_image(image: UploadFile = File(...), code: str = Form(...)):
     new_image_name = f"{code}.{image.filename.split(".")[-1]}"
-    image_location = os.path.join(os.path.dirname(__file__), "static", "Img", new_image_name)
-    
+    image_location = os.path.join(
+        os.path.dirname(__file__), "static", "Img", new_image_name
+    )
+
     with open(image_location, "wb") as f:
         f.write(await image.read())
-        
+
     result = image_service.create_image(code, new_image_name)
-    
+
     logging.info(result)
     return result
+
+
+@app.post("/send/mail", tags=["mail"])
+async def send_mail(to_email: str, code: str):
+    body_html = mail_service.create_body(code=code)
+    msg = mail_service.send_mail(to_email=to_email, code=code, body_html=body_html)
+    return {"msg": msg}
 
 
 @app.get("/test", tags=["tmp_test"])
