@@ -11,6 +11,7 @@ import os
 from Service.User.UserService import UserService
 from Service.Image.ImageService import ImageService
 from Service.Email.MailService import MailService
+from Service.Image.PredictService import PredictService
 
 from model.Requests.User import UserRequest
 from model.Requests.Mail import MailRequest
@@ -20,6 +21,7 @@ root_path = os.path.dirname(__file__)
 user_service = UserService()
 image_service = ImageService(os.path.join(root_path, "static"))
 mail_service = MailService(root_path)
+predict_service = PredictService()
 
 logging.basicConfig(
     level=logging.INFO, format="%(asctime)s \n%(levelname)s: \t %(message)s"
@@ -78,5 +80,6 @@ async def send_mail(mail_request:MailRequest):
 
 
 @app.get("/test", tags=["tmp_test"])
-async def test_page(code: str):
-    return user_service.read_by_code(code)
+async def test_page():
+    image_path = os.path.join(root_path, "static", "Img", "J0085.jpg")
+    return str(predict_service.predict_angle(image_path))
