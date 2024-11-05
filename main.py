@@ -15,6 +15,8 @@ from Service.Image.PredictService import PredictService
 
 from model.Requests.User import UserRequest
 from model.Requests.Mail import MailRequest
+from model.Image import ImageResponse
+from model.Image import ImageRequest
 
 root_path = os.path.dirname(__file__)
 
@@ -68,18 +70,25 @@ async def upload_image(image: UploadFile = File(...), code: str = Form(...)):
     result = image_service.create_image(code, new_image_name)
 
     logging.info(result)
+
     return result
 
 
 @app.post("/send/mail", tags=["mail"])
-async def send_mail(mail_request:MailRequest):
-    #logging.info(mail_request)
+async def send_mail(mail_request: MailRequest):
     body_html = mail_service.create_body(code=mail_request.code)
-    msg = mail_service.send_mail(to_email=mail_request.email, code=mail_request.code, body_html=body_html)
+    msg = mail_service.send_mail(
+        to_email=mail_request.email, code=mail_request.code, body_html=body_html, angle=mail_request.angle
+    )
     return {"msg": msg}
 
 
-@app.get("/test", tags=["tmp_test"])
-async def test_page():
-    image_path = os.path.join(root_path, "static", "Img", "J0085.jpg")
-    return str(predict_service.predict_angle(image_path))
+@app.post("/get/result", tags=["tmp_test"])
+async def get_result(request:ImageRequest):
+    logging.warning(request)
+    image_path = os.path.join(root_path, "static", "Img", request.image_file)
+    response = ImageResponse(
+        image_path=f"/api/v1/static/Img/{request}",
+        angle=predict_service.get_angle_image(image_path),
+    )
+    return response

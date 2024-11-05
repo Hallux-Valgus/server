@@ -8,7 +8,6 @@ import cv2
 from PIL import Image
 from rembg import remove
 
-
 class PredictService:
     root_path: str
     static_path:str
@@ -17,7 +16,7 @@ class PredictService:
         self.root_path = os.getcwd()
         self.static_path = os.path.join(self.root_path, "static")
     
-    def predict_angle(self, image_path:str):
+    def get_angle_image(self, image_path:str):
         image = cv2.imread(image_path)
         rb_img = remove(image)
         filled = np.array(rb_img)
@@ -46,6 +45,8 @@ class PredictService:
         pred_blue = (pred_blue_x, pred_blue_y)
         
         angle = self.__get_angle(pred_red, pred_green, pred_blue)
+        self.__draw_point(image_path, pred_red, pred_green, pred_blue)
+        
         return angle
         
     
@@ -99,3 +100,12 @@ class PredictService:
         
         angle = np.arccos((a**2 + b**2 - c**2) / (2*a*b))
         return np.degrees(angle)
+    
+    def __draw_point(self, image_path:str, pred_red, pred_green, pred_blue):
+        image = cv2.imread(image_path)
+        
+        cv2.circle(image, pred_red, 30, (0,0,255), -1) #BGR
+        cv2.circle(image, pred_green, 30, (0,255,0), -1) #BGR
+        cv2.circle(image, pred_blue, 30, (255,0,0), -1) #BGR
+        
+        cv2.imwrite(image_path, image)

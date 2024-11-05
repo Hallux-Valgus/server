@@ -27,24 +27,24 @@ class MailService:
         <body>
             <h1>code: {code}</h1>
             <p>아래를 보세요</p>
-            <img src='cid:image1'/>
+            <img src='cid:image1'style='width:300px; height:auto;'/>
         </body>
         </html>
         """
         
         return html
 
-    def send_mail(self, to_email:str, code:str, body_html:str):
+    def send_mail(self, to_email:str, code:str, body_html:str, angle:str):
         msg = MIMEMultipart()
         msg["From"] = self.smtp_user
         msg["To"] = to_email
-        msg["Subject"] = "[HFoot] 결과 이미지입니다"
+        msg["Subject"] = f"[HFoot] 결과 이미지입니다: {angle[:6]}"
         
         #msg.attach(MIMEText("Just Testing", "plain"))
         
         msg.attach(MIMEText(body_html, 'html'))
         
-        image_path = os.path.join(self.root_path, "static", "Img", "/Users/janghyolim/Desktop/code/HFoot/static/Img/f3cf6e7e-dbf8-4d56-86f7-59bcdc8b7532.jpg")
+        image_path = os.path.join(self.root_path, "static", "Img", code)
         
         with open(image_path, "rb") as f:
             mime_image = MIMEImage(f.read())
